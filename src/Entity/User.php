@@ -19,11 +19,6 @@ class User
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=50)
-     */
-    private $username;
-
-    /**
      * @ORM\Column(type="string", length=64)
      */
     private $email;
@@ -36,18 +31,6 @@ class User
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getUsername(): ?string
-    {
-        return $this->username;
-    }
-
-    public function setUsername(string $username): self
-    {
-        $this->username = $username;
-
-        return $this;
     }
 
     public function getEmail(): ?string
