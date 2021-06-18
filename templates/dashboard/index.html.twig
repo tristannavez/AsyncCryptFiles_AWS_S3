@@ -3,18 +3,73 @@
 {% block title %}Hello DashboardController!{% endblock %}
 
 {% block stylesheets %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous"
 {% endblock %}
 
 {% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
 {% endblock %}  
 
 {% block body %}
 <div class="content">
     <div class="list-user">
-        {{ users }}
+        <table>
+            <tr>
+                <th>Prénom</th>
+                <th>Nom</th>
+                <th>Mail</th>
+            </tr>
+            {% for value in users %}
+            <tr>
+                <td>{{ value.prenom|e }}</td>
+                <td>{{ value.nom|e }}</td>
+                <td>{{ value.email|e }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="content-btn">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+            Envoyer un fichier
+        </button>
     </div>
     <div class="list-file-bucket">
+        <table>
+            <tr>
+                <th>Titre</th>
+                <th>Dernière modification</th>
+            </tr>
+            {% for value in file %}
+            <tr>
+                <td>{{ value.titre|e }}</td>
+                <td>{{ value.date|e }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
 
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Upload de fichier</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ path('dashboard_createfile') }}">
+                        <input type="file" name="file" multiple required>
+                        <input type="submit" name="Envoyer">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -28,6 +28,16 @@ class User
      */
     private $password;
 
+    /**
+     * @ORM\Column(type="string", length=32)
+     */
+    private $firtname;
+
+    /**
+     * @ORM\Column(type="string", length=32)
+     */
+    private $lastname;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -53,6 +63,30 @@ class User
     public function setPassword(string $password): self
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    public function getFirtname(): ?string
+    {
+        return $this->firtname;
+    }
+
+    public function setFirtname(string $firtname): self
+    {
+        $this->firtname = $firtname;
+
+        return $this;
+    }
+
+    public function getLastname(): ?string
+    {
+        return $this->lastname;
+    }
+
+    public function setLastname(string $lastname): self
+    {
+        $this->lastname = $lastname;
 
         return $this;
     }

@@ -28,16 +28,27 @@ class InscriptionController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $task = $form->getData();
 
+            $firtname = $task->getFirtname();
+            $lastname = $task->getLastname();
             $email = $task->getEmail();
             $password = $task->getPassword();
 
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-            $user->setEmail($email);
-            $user->setPassword($passwordHash);
+            $user_exist = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => $email]);
+            if(!$user_exist){
+                $user->setFirtname($firtname);
+                $user->setLastname($lastname);
+                $user->setEmail($email);
+                $user->setPassword($passwordHash);
 
-            $entityManager->persist($user);
-            $entityManager->flush();
+                $entityManager->persist($user);
+                $entityManager->flush();
+
+                return $this->redirectToRoute('dashboard');
+            }else {
+                return $this->redirectToRoute('L\'utilisateur existe déjà.');
+            }
             
         }
 
