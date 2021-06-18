@@ -32,9 +32,9 @@ class ConnexionController extends AbstractController
             $userconnted = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => $email]);
 
             if(password_verify($password, $userconnted->getPassword())){
-                return $this->redirectToRoute('dashboard');
+                return $this->redirectToRoute('dashboard', [], 200);
             }else{
-                return $this->redirectToRoute('L\'utilisateur n\existe pas.');
+                return $this->redirectToRoute('L\'utilisateur n\existe pas.', [], 204);
             }
             
         }

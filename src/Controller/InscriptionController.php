@@ -7,7 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\User;
-use App\Form\UserType;
 use Symfony\Component\HttpFoundation\Request;
 
 class InscriptionController extends AbstractController
@@ -29,7 +28,7 @@ class InscriptionController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $task = $form->getData();
 
-            $firtname = $task->getFirtname();
+            $firstname = $task->getFirstname();
             $lastname = $task->getLastname();
             $email = $task->getEmail();
             $password = $task->getPassword();
@@ -38,7 +37,7 @@ class InscriptionController extends AbstractController
 
             $user_exist = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => $email]);
             if(!$user_exist){
-                $user->setFirtname($firtname);
+                $user->setFirstname($firstname);
                 $user->setLastname($lastname);
                 $user->setEmail($email);
                 $user->setPassword($passwordHash);

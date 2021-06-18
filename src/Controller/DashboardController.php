@@ -77,7 +77,7 @@ class DashboardController extends AbstractController
             'SourceFile' => $url_fichier
         ]);
 
-        return new Response();
+        return $this->redirectToRoute('dashboard', [], 204);
 
     }
     
