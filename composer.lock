@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3116ad42212cd78a1916954a3c1d0515",
+    "content-hash": "403ff88c3cd70cd85dd23e668064a3d5",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -2729,6 +2729,28 @@
                 "controllers"
             ],
             "time": "2021-05-31T10:40:46+00:00"
+        },
+        {
+            "name": "symfony/apache-pack",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/apache-pack.git",
+                "reference": "3aa5818d73ad2551281fc58a75afd9ca82622e6c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/apache-pack/zipball/3aa5818d73ad2551281fc58a75afd9ca82622e6c",
+                "reference": "3aa5818d73ad2551281fc58a75afd9ca82622e6c",
+                "shasum": ""
+            },
+            "type": "symfony-pack",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A pack for Apache support in Symfony",
+            "time": "2017-12-12T01:46:35+00:00"
         },
         {
             "name": "symfony/asset",
@@ -6183,16 +6205,16 @@
         },
         {
             "name": "symfony/runtime",
-            "version": "v5.3.0",
+            "version": "v5.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/runtime.git",
-                "reference": "d119a381b76eb39c5c4f4ee284cb1dd431109c7c"
+                "reference": "876ad7ce168c893550d20a1da58f52d3ec4eb574"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/runtime/zipball/d119a381b76eb39c5c4f4ee284cb1dd431109c7c",
-                "reference": "d119a381b76eb39c5c4f4ee284cb1dd431109c7c",
+                "url": "https://api.github.com/repos/symfony/runtime/zipball/876ad7ce168c893550d20a1da58f52d3ec4eb574",
+                "reference": "876ad7ce168c893550d20a1da58f52d3ec4eb574",
                 "shasum": ""
             },
             "require": {
@@ -6253,7 +6275,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-05-26T17:43:10+00:00"
+            "time": "2021-06-11T12:51:21+00:00"
         },
         {
             "name": "symfony/security-bundle",

@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ConnexionController extends AbstractController
 {
     /**
-     * @Route("/", name="connexion")
+     * @Route("connexion", name="connexion")
      */
     public function index(Request $request): Response
     {
@@ -22,15 +22,15 @@ class ConnexionController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            // $form->getData() holds the submitted values
-            // but, the original `$task` variable has also been updated
+
             $task = $form->getData();
 
-            $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => $task['email']]);
-            
-            dump($user);
+            $email = $task->getEmail();
+            $password = $task->getPassword();
 
-            if(count($user) > 0){
+            $userconnted = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => $email, 'password' => $password]);
+
+            if($userconnted){
                 return $this->redirectToRoute('dashboard');
             }else{
                 return $this->redirectToRoute('L\'utilisateur n\existe pas.');
@@ -43,4 +43,37 @@ class ConnexionController extends AbstractController
             'form' => $form->createView()
         ]);
     }
+
+    /**
+     * @Route("/inscription", name="inscription")
+     */
+    public function inscription(Request $request): Response
+    {
+
+        $user = new User();
+
+        $form = $this->createForm(UserType::class, $user);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $task = $form->getData();
+
+            $email = $task->getEmail();
+            $password = $task->getPassword();
+
+            $user->setEmail($email);
+            $user->setPassword($password);
+
+            $entityManager->persist($user);
+            $entityManager->flush();
+            
+        }
+
+        return $this->render('inscription/index.html.twig', [
+            'controller_name' => 'InscriptionController',
+        ]);
+    }
+
 }
