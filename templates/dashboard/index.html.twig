@@ -21,8 +21,8 @@
             </tr>
             {% for value in users %}
             <tr>
-                <td>{{ value.prenom|e }}</td>
-                <td>{{ value.nom|e }}</td>
+                <td>{{ value.firstname|e }}</td>
+                <td>{{ value.lastname|e }}</td>
                 <td>{{ value.email|e }}</td>
             </tr>
             {% endfor %}
