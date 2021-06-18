@@ -11,6 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ConnexionController extends AbstractController
 {
+
     /**
      * @Route("connexion", name="connexion")
      */
@@ -28,9 +29,9 @@ class ConnexionController extends AbstractController
             $email = $task->getEmail();
             $password = $task->getPassword();
 
-            $userconnted = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => $email, 'password' => $password]);
+            $userconnted = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => $email]);
 
-            if($userconnted){
+            if(password_verify($password, $userconnted->getPassword())){
                 return $this->redirectToRoute('dashboard');
             }else{
                 return $this->redirectToRoute('L\'utilisateur n\existe pas.');
@@ -39,40 +40,7 @@ class ConnexionController extends AbstractController
         }
 
         return $this->render('connexion/index.html.twig', [
-            'controller_name' => 'ConnexionController',
             'form' => $form->createView()
-        ]);
-    }
-
-    /**
-     * @Route("/inscription", name="inscription")
-     */
-    public function inscription(Request $request): Response
-    {
-
-        $user = new User();
-
-        $form = $this->createForm(UserType::class, $user);
-
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            $entityManager = $this->getDoctrine()->getManager();
-            $task = $form->getData();
-
-            $email = $task->getEmail();
-            $password = $task->getPassword();
-
-            $user->setEmail($email);
-            $user->setPassword($password);
-
-            $entityManager->persist($user);
-            $entityManager->flush();
-            
-        }
-
-        return $this->render('inscription/index.html.twig', [
-            'controller_name' => 'InscriptionController',
         ]);
     }
 
