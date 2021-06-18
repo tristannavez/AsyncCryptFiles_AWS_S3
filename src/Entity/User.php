@@ -31,7 +31,7 @@ class User
     /**
      * @ORM\Column(type="string", length=32)
      */
-    private $firtname;
+    private $firstname;
 
     /**
      * @ORM\Column(type="string", length=32)
@@ -67,14 +67,14 @@ class User
         return $this;
     }
 
-    public function getFirtname(): ?string
+    public function getFirstname(): ?string
     {
-        return $this->firtname;
+        return $this->firstname;
     }
 
-    public function setFirtname(string $firtname): self
+    public function setFirstname(string $firstname): self
     {
-        $this->firtname = $firtname;
+        $this->firstname = $firstname;
 
         return $this;
     }

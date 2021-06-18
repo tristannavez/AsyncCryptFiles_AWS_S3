@@ -9,6 +9,8 @@ CREATE TABLE `doctrine_migration_versions` (
 
 CREATE TABLE `user` (
   `id` int NOT NULL AUTO_INCREMENT,
+  `firstname` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `lastname` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
   `password` varchar(14) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)

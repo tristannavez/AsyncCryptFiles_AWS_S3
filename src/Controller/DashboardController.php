@@ -50,6 +50,8 @@ class DashboardController extends AbstractController
 
     /**
      * @Route("dashboard/createFile", name="dashboard_createfile")
+     * @param Request $request
+     * @return Response
      */
     public function createFile(Request $request): Response
     {
@@ -63,13 +65,12 @@ class DashboardController extends AbstractController
         $bucketName = 'espace-partage-epsi-i1-dev';
         
         // Je récupère le fichier uploade
-        $json_file = $request->files->get('file')["name"];
+        $json_file = $request->files->get('fileToUpload');
         // Je récupère l'extension du fichier
-        $file_info = pathinfo($json_file->getClientOriginalName());
         // Ajout du nom du fichier dans l'objet File
-        $fichier = $file_info["filename"];
-        $url_fichier = $file_info["filepath"];
-        
+        $fichier = $json_file->getClientOriginalName();
+        $url_fichier = $json_file->getPathName();
+
         $s3->putObject([
             'Bucket' => $bucketName,
             'Key' => $fichier,
