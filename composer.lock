@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6fe7053a27aab15b7924712e13e95568",
+    "content-hash": "00328488934afe0412a10b9dadd11049",
     "packages": [
         {
             "name": "amphp/amp",
@@ -2854,6 +2854,48 @@
             "time": "2021-04-26T09:17:50+00:00"
         },
         {
+            "name": "jasonhinkle/php-gpg",
+            "version": "1.6.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jasonhinkle/php-gpg.git",
+                "reference": "1e6cba4feaa6951f456f025a8cd09e905642b146"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jasonhinkle/php-gpg/zipball/1e6cba4feaa6951f456f025a8cd09e905642b146",
+                "reference": "1e6cba4feaa6951f456f025a8cd09e905642b146",
+                "shasum": ""
+            },
+            "require": {
+                "paragonie/random_compat": "1.1.*"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "libs/GPG.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL"
+            ],
+            "authors": [
+                {
+                    "name": "Jason Hinkle"
+                }
+            ],
+            "description": "GPG / PGP port written in pure PHP with no binary dependencies",
+            "keywords": [
+                "gpg"
+            ],
+            "support": {
+                "issues": "https://github.com/jasonhinkle/php-gpg/issues",
+                "source": "https://github.com/jasonhinkle/php-gpg/tree/master"
+            },
+            "time": "2016-02-19T09:29:57+00:00"
+        },
+        {
             "name": "kelunik/certificate",
             "version": "v1.1.2",
             "source": {
@@ -3490,6 +3532,59 @@
                 "source": "https://github.com/jmespath/jmespath.php/tree/2.6.0"
             },
             "time": "2020-07-31T21:01:56+00:00"
+        },
+        {
+            "name": "paragonie/random_compat",
+            "version": "1.1.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/paragonie/random_compat.git",
+                "reference": "e6f80ab77885151908d0ec743689ca700886e8b0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/e6f80ab77885151908d0ec743689ca700886e8b0",
+                "reference": "e6f80ab77885151908d0ec743689ca700886e8b0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.*|5.*"
+            },
+            "suggest": {
+                "ext-libsodium": "Provides a modern crypto API that can be used to generate random bytes."
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "lib/random.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Paragon Initiative Enterprises",
+                    "email": "security@paragonie.com",
+                    "homepage": "https://paragonie.com"
+                }
+            ],
+            "description": "PHP 5.x polyfill for random_bytes() and random_int() from PHP 7",
+            "keywords": [
+                "csprng",
+                "pseudorandom",
+                "random"
+            ],
+            "support": {
+                "email": "info@paragonie.com",
+                "issues": "https://github.com/paragonie/random_compat/issues",
+                "source": "https://github.com/paragonie/random_compat"
+            },
+            "time": "2016-01-29T16:19:52+00:00"
         },
         {
             "name": "pear/console_commandline",

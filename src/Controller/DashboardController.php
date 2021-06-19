@@ -2,19 +2,16 @@
 
 namespace App\Controller;
 
-use Aws\Credentials\Credentials;
-use Aws\Exception\AwsException;
-use Aws\Iam\IamClient;
 use App\Entity\User;
 use Aws\S3\S3Client;
 use Crypt_GPG;
 use Crypt_GPG_BadPassphraseException;
 use Crypt_GPG_Exception;
+use Crypt_GPG_FileException;
 use Crypt_GPG_KeyNotFoundException;
 use Crypt_GPG_NoDataException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -37,12 +34,14 @@ class DashboardController extends AbstractController
         $bucketName = 'espace-partage-epsi-i1-dev';
 
         $files = $s3->listObjects(['Bucket' => $bucketName]);
+
         $file = array();
 
         for($i=0;$i<count($files['Contents']);$i++){
+            $date = date('d-m-y',strtotime($files['Contents'][$i]['LastModified']));
             $file[] = ([
                 'titre' => $files['Contents'][$i]['Key'],
-                'date' => $files['Contents'][$i]['LastModified']
+                'date' => $date
             ]);
         }
 
@@ -61,9 +60,8 @@ class DashboardController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function createFile(Request $request, InputInterface $input, OutputInterface $output): Response
+    public function createFile(Request $request): Response
     {
-        $gpg = new Crypt_GPG();
 
         $sharedConfig = [
             'region' => 'eu-west-3',
@@ -75,10 +73,12 @@ class DashboardController extends AbstractController
         
         // Je récupère le fichier uploade
         $json_file = $request->files->get('fileToUpload');
-        // Je récupère l'extension du fichier
-        // Ajout du nom du fichier dans l'objet File
+
         $fichier = $json_file->getClientOriginalName();
         $url_fichier = $json_file->getPathName();
+
+        $content_file = file_get_contents($url_fichier);
+        file_put_contents($fichier, $this->contentEncryption($content_file));
 
         $s3->putObject([
             'Bucket' => $bucketName,
@@ -91,44 +91,75 @@ class DashboardController extends AbstractController
     }
 
     /**
-     * @param $csv
+     * @Route("dashboard/download", name="dashboard_downloadfile")
+     * @param Request $request
+     */
+    public function downloadFile(Request $request){
+
+        $sharedConfig = [
+            'region' => 'eu-west-3',
+            'version' => 'latest'
+        ];
+
+        $s3 = new S3Client($sharedConfig);
+
+        $bucketName = 'espace-partage-epsi-i1-dev';
+        $file =  $request->get('file');
+        $saveAs = dirname(__DIR__).'FileBucket';
+
+        $fileBucket = $s3->getObject([
+            'Bucket' => $bucketName,
+            'Key' => $file,
+            'SaveAs' => $file
+        ]);
+
+        dd($fileBucket);
+
+        //$decryptedFile = $this->fileDecryption($encryptedFile);
+    }
+
+    /**
+     * @param $content
      * @return mixed
      * @throws Crypt_GPG_BadPassphraseException
      * @throws Crypt_GPG_Exception
      * @throws Crypt_GPG_KeyNotFoundException
      * @throws Crypt_GPG_NoDataException
      */
-    public function csvEncryption($csv)
+    public function contentEncryption($content)
     {
-        $publicKey = file_get_contents("/var/www/html/keys/client_public_key.txt");
+        $publicKey = file_get_contents(dirname(__DIR__).'/keys/public.txt');
         // ou récupération de la clé publique depuis un serveur AWS S3 par exemple.
         $gpg = new Crypt_GPG();
         $info = $gpg->importKey($publicKey);
-        $gpg->addDecryptKey($info[ 'fingerprint' ]);
-        $encryptedCsv = $gpg->encrypt($csv);
+        $gpg->addSignKey($info[ 'fingerprint' ]);
+        $gpg->addEncryptKey($info[ 'fingerprint' ]);
+        $encryptedContent = $gpg->encryptAndSign($content);
 
-        return $encryptedCsv;
+        return $encryptedContent;
     }
 
     /**
-     * @param $encryptedCsv
+     * @param $encryptedContent
      * @return string
      * @throws Crypt_GPG_BadPassphraseException
      * @throws Crypt_GPG_Exception
      * @throws Crypt_GPG_KeyNotFoundException
      * @throws Crypt_GPG_NoDataException
      */
-    public function csvDecryption($encryptedCsv)
+    public function contentDecryption($encryptedContent)
     {
-        $this->logger->info('Déchiffrement');
-        $privateKey = file_get_contents("/var/www/html/keys/client_private_key.txt");
+        $privateKey = file_get_contents(dirname(__DIR__).'/keys/private.txt');
         // ou récupération de la clé privée depuis un serveur AWS S3 par exemple.
         $gpg = new Crypt_GPG();
         $info = $gpg->importKey($privateKey);
-        $gpg->addDecryptKey($info[ 'fingerprint' ], "azerty123"); //azerty123 = passphrase
-        $decryptedCsv = $gpg->decrypt($encryptedCsv);
+        $gpg->addSignKey($info[ 'fingerprint' ]);
+        $gpg->addDecryptKey($info[ 'fingerprint' ], "decrypt");
+        $decryptedContent = $gpg->decryptAndVerify($encryptedContent);
 
-        return $decryptedCsv;
+        dd($decryptedContent);
+
+        return $decryptedContent;
     }
 
 }

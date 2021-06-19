@@ -17,10 +17,30 @@ class ConnexionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('email', EmailType::class)
-            ->add('password', PasswordType::class)
-            ->add('firstname', HiddenType::class)
-            ->add('lastname', HiddenType::class)
+            ->add('email', EmailType::class, array(
+                'label' => false,
+                'attr' => array(
+                    'placeholder' => 'Votre email'
+                )
+            ))
+            ->add('password', PasswordType::class, array(
+                'label' => false,
+                'attr' => array(
+                    'placeholder' => 'Votre mot de passe'
+                )
+            ))
+            ->add('firstname', HiddenType::class, array(
+                'label' => false,
+                'attr' => array(
+                    'placeholder' => 'Votre prénom'
+                )
+            ))
+            ->add('lastname', HiddenType::class, array(
+                'label' => false,
+                'attr' => array(
+                    'placeholder' => 'Votre nom'
+                )
+            ))
             ->add('submit', SubmitType::class)
         ;
     }

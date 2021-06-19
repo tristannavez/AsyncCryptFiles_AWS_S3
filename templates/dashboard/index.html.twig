@@ -3,45 +3,66 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 {% endblock %}
 
 {% block javascripts %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            function downloadFile(){
+                $.ajax({
+                    url: '{{ path('dashboard_downloadfile') }}',
+                    type: 'POST',
+                    dataType: 'JSON', // On désire recevoir du HTML
+                    success: function () { // code_html contient le HTML renvoyé
+                        alert("Information : Les changements ont été éffectués !");
+                    },
+                    error: function () {
+                        alert("Information : Les changements ont été éffectués !");
+                    }
+                });
+            }
+
+        });
+    </script>
 {% endblock %}  
 
 {% block body %}
 <div class="content">
     <div class="list-user">
-        <table>
-            <tr>
-                <th>Prénom</th>
-                <th>Nom</th>
-                <th>Mail</th>
-            </tr>
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <th scope="col">Nom</th>
+                <th scope="col">Prénom</th>
+                <th scope="col">Mail</th>
+            </thead>
             {% for value in users %}
-            <tr>
-                <td>{{ value.firstname|e }}</td>
-                <td>{{ value.lastname|e }}</td>
-                <td>{{ value.email|e }}</td>
-            </tr>
+            <tbody>
+                <td scope="row">{{ value.lastname|e }}</td>
+                <td scope="row">{{ value.firstname|e }}</td>
+                <td scope="row">{{ value.email|e }}</td>
+            </tbody>
             {% endfor %}
         </table>
     </div>
-    <div class="content-btn">
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-            Envoyer un fichier
-        </button>
-    </div>
     <div class="list-file-bucket">
-        <table>
-            <tr>
-                <th>Titre</th>
-                <th>Dernière modification</th>
-            </tr>
+        <div class="content-btn">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                Envoyer un fichier
+            </button>
+        </div>
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <th scope="col">Titre</th>
+                <th scope="col">Dernière modification</th>
+                <th scope="col">Action</th>
+            </thead>
             {% for value in file %}
-            <tr>
-                <td>{{ value.titre|e }}</td>
-                <td>{{ value.date|e }}</td>
-            </tr>
+            <tbody>
+                <td scope="row">{{ value.titre|e }}</td>
+                <td scope="row">{{ value.date|e }}</td>
+                <td scope="row"><button type="button" class="btn btn-success" onclick="downloadFile()"><i class="fas fa-cloud-download-alt"></i></button></td>
+            </tbody>
             {% endfor %}
         </table>
     </div>
