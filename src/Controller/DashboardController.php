@@ -7,13 +7,21 @@ use Aws\Exception\AwsException;
 use Aws\Iam\IamClient;
 use App\Entity\User;
 use Aws\S3\S3Client;
+use Crypt_GPG;
+use Crypt_GPG_BadPassphraseException;
+use Crypt_GPG_Exception;
+use Crypt_GPG_KeyNotFoundException;
+use Crypt_GPG_NoDataException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DashboardController extends AbstractController
 {
+
     /**
      * @Route("dashboard", name="dashboard")
      */
@@ -53,8 +61,9 @@ class DashboardController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function createFile(Request $request): Response
+    public function createFile(Request $request, InputInterface $input, OutputInterface $output): Response
     {
+        $gpg = new Crypt_GPG();
 
         $sharedConfig = [
             'region' => 'eu-west-3',
@@ -77,8 +86,49 @@ class DashboardController extends AbstractController
             'SourceFile' => $url_fichier
         ]);
 
-        return $this->redirectToRoute('dashboard', [], 204);
+        return $this->redirectToRoute('dashboard');
 
     }
-    
+
+    /**
+     * @param $csv
+     * @return mixed
+     * @throws Crypt_GPG_BadPassphraseException
+     * @throws Crypt_GPG_Exception
+     * @throws Crypt_GPG_KeyNotFoundException
+     * @throws Crypt_GPG_NoDataException
+     */
+    public function csvEncryption($csv)
+    {
+        $publicKey = file_get_contents("/var/www/html/keys/client_public_key.txt");
+        // ou récupération de la clé publique depuis un serveur AWS S3 par exemple.
+        $gpg = new Crypt_GPG();
+        $info = $gpg->importKey($publicKey);
+        $gpg->addDecryptKey($info[ 'fingerprint' ]);
+        $encryptedCsv = $gpg->encrypt($csv);
+
+        return $encryptedCsv;
+    }
+
+    /**
+     * @param $encryptedCsv
+     * @return string
+     * @throws Crypt_GPG_BadPassphraseException
+     * @throws Crypt_GPG_Exception
+     * @throws Crypt_GPG_KeyNotFoundException
+     * @throws Crypt_GPG_NoDataException
+     */
+    public function csvDecryption($encryptedCsv)
+    {
+        $this->logger->info('Déchiffrement');
+        $privateKey = file_get_contents("/var/www/html/keys/client_private_key.txt");
+        // ou récupération de la clé privée depuis un serveur AWS S3 par exemple.
+        $gpg = new Crypt_GPG();
+        $info = $gpg->importKey($privateKey);
+        $gpg->addDecryptKey($info[ 'fingerprint' ], "azerty123"); //azerty123 = passphrase
+        $decryptedCsv = $gpg->decrypt($encryptedCsv);
+
+        return $decryptedCsv;
+    }
+
 }
