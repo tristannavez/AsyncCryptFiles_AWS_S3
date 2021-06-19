@@ -3,6 +3,9 @@
 Le SDK de aws fonctionne via des credentials présent dans votre dossier .aws sous Windows
 https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html
 
+Le GPG pour utiliser les composants dans le code
+https://blog.ghostinthemachines.com/2015/03/01/how-to-use-gpg-command-line/
+
 # Première étape - changer les accès base de données
 1 - Changer ou copier et créer les accès de la base de donnée dans le fichier .env
 
