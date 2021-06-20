@@ -9,16 +9,19 @@
 {% block javascripts %}
     <script type="text/javascript">
         $(document).ready(function(){
-            function downloadFile(){
+            function downloadFile(fichier){
                 $.ajax({
                     url: '{{ path('dashboard_downloadfile') }}',
                     type: 'POST',
+                    data: {
+                      file : fichier
+                    },
                     dataType: 'JSON', // On désire recevoir du HTML
                     success: function () { // code_html contient le HTML renvoyé
-                        alert("Information : Les changements ont été éffectués !");
+                        alert("Information : le téléchargement c'est bien passé !");
                     },
                     error: function () {
-                        alert("Information : Les changements ont été éffectués !");
+                        alert("Information : le téléchargement c'est pas bien passé !");
                     }
                 });
             }
@@ -61,7 +64,7 @@
             <tbody>
                 <td scope="row">{{ value.titre|e }}</td>
                 <td scope="row">{{ value.date|e }}</td>
-                <td scope="row"><a href="{{ path('dashboard_downloadfile') }}" class="btn btn-success"><i class="fas fa-cloud-download-alt"></i></a></td>
+                <td scope="row"><button type="button" class="btn btn-success" onclick="downloadFile('{{ value.titre|e }}')"><i class="fas fa-cloud-download-alt"></i></button></td>
             </tbody>
             {% endfor %}
         </table>
