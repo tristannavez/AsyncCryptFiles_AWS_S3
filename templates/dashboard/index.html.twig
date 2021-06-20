@@ -3,32 +3,8 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+<link rel="stylesheet" href="{{ asset('css/style.css') }}">
 {% endblock %}
-
-{% block javascripts %}
-    <script type="text/javascript">
-        $(document).ready(function(){
-            function downloadFile(fichier){
-                $.ajax({
-                    url: '{{ path('dashboard_downloadfile') }}',
-                    type: 'POST',
-                    data: {
-                      file : fichier
-                    },
-                    dataType: 'JSON', // On désire recevoir du HTML
-                    success: function () { // code_html contient le HTML renvoyé
-                        alert("Information : le téléchargement c'est bien passé !");
-                    },
-                    error: function () {
-                        alert("Information : le téléchargement c'est pas bien passé !");
-                    }
-                });
-            }
-
-        });
-    </script>
-{% endblock %}  
 
 {% block body %}
 <div class="content">
@@ -64,7 +40,7 @@
             <tbody>
                 <td scope="row">{{ value.titre|e }}</td>
                 <td scope="row">{{ value.date|e }}</td>
-                <td scope="row"><button type="button" class="btn btn-success" onclick="downloadFile('{{ value.titre|e }}')"><i class="fas fa-cloud-download-alt"></i></button></td>
+                <td scope="row"><a class="btn btn-success" href="{{ path('dashboard_downloadfile', { fichier : 'testG1.txt' }) }}"><i class="fas fa-cloud-download-alt"></i></a></td>
             </tbody>
             {% endfor %}
         </table>
@@ -93,4 +69,7 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
 {% endblock %}

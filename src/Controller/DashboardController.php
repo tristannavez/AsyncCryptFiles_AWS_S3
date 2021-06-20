@@ -10,7 +10,6 @@ use Crypt_GPG_Exception;
 use Crypt_GPG_KeyNotFoundException;
 use Crypt_GPG_NoDataException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -36,8 +35,6 @@ class DashboardController extends AbstractController
 
         // Récupération des fichiers dans le bucket
         $files = $s3->listObjects(['Bucket' => $bucketName]);
-
-        dump($files);
 
         // On créer un tableau
         $file = array();
@@ -93,8 +90,7 @@ class DashboardController extends AbstractController
         // Envoi du fichier signé et crypté dans le bucket
         $s3->putObject([
             'Bucket' => $bucketName,
-            'Key' => $fichier,
-            'SourceFile' => $url_fichier
+            'Key' => $fichier
         ]);
         // Redirection vers la page dashboard une fois l'envoi terminé
         return $this->redirectToRoute('dashboard');
@@ -102,10 +98,9 @@ class DashboardController extends AbstractController
     }
 
     /**
-     * @Route("dashboard/download", name="dashboard_downloadfile")
-     * @param Request $request
+     * @Route("dashboard/download/{fichier}", name="dashboard_downloadfile")
      */
-    public function downloadFile(Request $request){
+    public function downloadFile($fichier){
 
         $sharedConfig = [
             'region' => 'eu-west-3',
@@ -114,9 +109,6 @@ class DashboardController extends AbstractController
         $s3 = new S3Client($sharedConfig);
         $bucketName = 'espace-partage-epsi-i1-dev';
 
-        // Récupération du fichier envoyé
-        $fichier =  $request->get('file');
-
         // Récupération du fichier à télécharger dans le bucket
         $fileBucket = $s3->getObject([
             'Bucket' => $bucketName,
@@ -124,16 +116,24 @@ class DashboardController extends AbstractController
             'SaveAs' => $fichier
         ]);
 
-        $fichier = $fileBucket->getClientOriginalName();
-        $url_fichier = $fileBucket->getPathName();
-        $content_file = file_get_contents($url_fichier);
+        $url = $fileBucket['@metadata']['effectiveUri'];
 
-        // Ajout du contenu précédemment récupéré décrypté et vérifié
-        file_put_contents($fichier, $this->contentDecryption($content_file));
+        // Récupération de la clé privée
+        $privateKey = file_get_contents(dirname(__DIR__).'/keys/private.txt');
+        $gpg = new Crypt_GPG();
+        $info = $gpg->importKey($privateKey);
+        $gpg->addSignKey($info[ 'fingerprint' ], "decrypt");
+        // Ajout de la clé de décryptage accompagné de la phrase secrète
+        $gpg->addDecryptKey($info[ 'fingerprint' ], "decrypt");
+        // Decryptage et vérification du contenu du fichier envoyé depuis la fonction d'upload
+        $decryptedContent = $gpg->decryptAndVerify(file_get_contents($url));
         // Instanciation de l'objet File
-        $file = new File();
+        $file = new \Symfony\Component\Filesystem\Filesystem();
         // Déplacement du fichier dans le dossier UploadFile présent dans le dossier public
-        $file->move($this->getParameter('fichier_directory'), $fichier);
+        if($file->exists($this->getParameter('fichier_directory').$fichier)){
+            $content_fichier_upload = file_get_contents($this->getParameter('fichier_directory').$fichier);
+            $content = file_get_contents($fichier, $this->contentDecryption($content_fichier_upload));
+        }
         // Redirection vers la page dashboard une fois l'envoi terminé
         return $this->redirectToRoute('dashboard');
 
@@ -156,18 +156,19 @@ class DashboardController extends AbstractController
         // Ajout de la clé récupéré précédemment dans l'objet
         $info = $gpg->importKey($publicKey);
         // Ajout d'une signature dans l'objet via la clé public
-        $gpg->addSignKey($info[ 'fingerprint' ]);
+        //$gpg->addSignKey($info[ 'fingerprint' ]);
         // Ajout de l'encryptage dans l'objet via la clé public
         $gpg->addEncryptKey($info[ 'fingerprint' ]);
         // Encryptage et signature du contenu du fichier envoyé depuis la fonction d'upload
-        $encryptedContent = $gpg->encryptAndSign($content);
+        $encryptedContent = $gpg->encrypt($content);
+
         // Retour du contenu encrypté et signé
         return $encryptedContent;
     }
 
     /**
      * @param $encryptedContent
-     * @return array
+     * @return string
      * @throws Crypt_GPG_BadPassphraseException
      * @throws Crypt_GPG_Exception
      * @throws Crypt_GPG_KeyNotFoundException
@@ -179,11 +180,11 @@ class DashboardController extends AbstractController
         $privateKey = file_get_contents(dirname(__DIR__).'/keys/private.txt');
         $gpg = new Crypt_GPG();
         $info = $gpg->importKey($privateKey);
-        $gpg->addSignKey($info[ 'fingerprint' ]);
+        //$gpg->addSignKey($info[ 'fingerprint' ], "decrypt");
         // Ajout de la clé de décryptage accompagné de la phrase secrète
         $gpg->addDecryptKey($info[ 'fingerprint' ], "decrypt");
         // Decryptage et vérification du contenu du fichier envoyé depuis la fonction d'upload
-        $decryptedContent = $gpg->decryptAndVerify($encryptedContent);
+        $decryptedContent = $gpg->decrypt($encryptedContent);
 
         return $decryptedContent;
     }
