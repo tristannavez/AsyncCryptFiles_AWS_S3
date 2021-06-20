@@ -156,11 +156,11 @@ class DashboardController extends AbstractController
         // Ajout de la clé récupéré précédemment dans l'objet
         $info = $gpg->importKey($publicKey);
         // Ajout d'une signature dans l'objet via la clé public
-        //$gpg->addSignKey($info[ 'fingerprint' ]);
+        $gpg->addSignKey($info[ 'fingerprint' ]);
         // Ajout de l'encryptage dans l'objet via la clé public
         $gpg->addEncryptKey($info[ 'fingerprint' ]);
         // Encryptage et signature du contenu du fichier envoyé depuis la fonction d'upload
-        $encryptedContent = $gpg->encrypt($content);
+        $encryptedContent = $gpg->encryptAndSign($content);
 
         // Retour du contenu encrypté et signé
         return $encryptedContent;
@@ -180,11 +180,11 @@ class DashboardController extends AbstractController
         $privateKey = file_get_contents(dirname(__DIR__).'/keys/private.txt');
         $gpg = new Crypt_GPG();
         $info = $gpg->importKey($privateKey);
-        //$gpg->addSignKey($info[ 'fingerprint' ], "decrypt");
+        $gpg->addSignKey($info[ 'fingerprint' ], "decrypt");
         // Ajout de la clé de décryptage accompagné de la phrase secrète
         $gpg->addDecryptKey($info[ 'fingerprint' ], "decrypt");
         // Decryptage et vérification du contenu du fichier envoyé depuis la fonction d'upload
-        $decryptedContent = $gpg->decrypt($encryptedContent);
+        $decryptedContent = $gpg->decryptAndVerify($encryptedContent);
 
         return $decryptedContent;
     }
