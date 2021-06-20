@@ -61,7 +61,7 @@
             <tbody>
                 <td scope="row">{{ value.titre|e }}</td>
                 <td scope="row">{{ value.date|e }}</td>
-                <td scope="row"><button type="button" class="btn btn-success" onclick="downloadFile()"><i class="fas fa-cloud-download-alt"></i></button></td>
+                <td scope="row"><a href="{{ path('dashboard_downloadfile') }}" class="btn btn-success"><i class="fas fa-cloud-download-alt"></i></a></td>
             </tbody>
             {% endfor %}
         </table>

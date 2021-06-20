@@ -10,6 +10,7 @@ use Crypt_GPG_Exception;
 use Crypt_GPG_KeyNotFoundException;
 use Crypt_GPG_NoDataException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -35,6 +36,8 @@ class DashboardController extends AbstractController
 
         // Récupération des fichiers dans le bucket
         $files = $s3->listObjects(['Bucket' => $bucketName]);
+
+        dump($files);
 
         // On créer un tableau
         $file = array();
@@ -111,18 +114,29 @@ class DashboardController extends AbstractController
         $s3 = new S3Client($sharedConfig);
         $bucketName = 'espace-partage-epsi-i1-dev';
 
-        // Récupération du nom du fichier envoyé
-        $file =  $request->get('file');
+        // Récupération du fichier envoyé
+        $fichier =  $request->get('file');
+
         // Récupération du fichier à télécharger dans le bucket
         $fileBucket = $s3->getObject([
             'Bucket' => $bucketName,
-            'Key' => $file,
-            'SaveAs' => $file
+            'Key' => $fichier,
+            'SaveAs' => $fichier
         ]);
 
-        dd($fileBucket);
-        // Décryptage du fichier téléchargé
-        //$decryptedFile = $this->fileDecryption($encryptedFile);
+        $fichier = $fileBucket->getClientOriginalName();
+        $url_fichier = $fileBucket->getPathName();
+        $content_file = file_get_contents($url_fichier);
+
+        // Ajout du contenu précédemment récupéré décrypté et vérifié
+        file_put_contents($fichier, $this->contentDecryption($content_file));
+        // Instanciation de l'objet File
+        $file = new File();
+        // Déplacement du fichier dans le dossier UploadFile présent dans le dossier public
+        $file->move($this->getParameter('fichier_directory'), $fichier);
+        // Redirection vers la page dashboard une fois l'envoi terminé
+        return $this->redirectToRoute('dashboard');
+
     }
 
     /**
@@ -153,7 +167,7 @@ class DashboardController extends AbstractController
 
     /**
      * @param $encryptedContent
-     * @return string
+     * @return array
      * @throws Crypt_GPG_BadPassphraseException
      * @throws Crypt_GPG_Exception
      * @throws Crypt_GPG_KeyNotFoundException
@@ -170,8 +184,6 @@ class DashboardController extends AbstractController
         $gpg->addDecryptKey($info[ 'fingerprint' ], "decrypt");
         // Decryptage et vérification du contenu du fichier envoyé depuis la fonction d'upload
         $decryptedContent = $gpg->decryptAndVerify($encryptedContent);
-
-        dd($decryptedContent);
 
         return $decryptedContent;
     }
