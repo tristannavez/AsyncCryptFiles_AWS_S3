@@ -1,4 +1,10 @@
-# CasPratiqueCS - Prérequis
+# AsyncCryptFiles_AWS_S3 - Introduction
+Création d'une plateforme de partage de fichiers qui va chercher dans un bucket Amazon S3.
+Les fichiers sont cryptés de manière asynchrone.
+Une clé public est nécessaire au cryptage du fichier, et une clé privé permettra le déchiffrement.
+Les fichiers sont signés numériquement, et l'utilisateur est authentifié.
+
+# AsyncCryptFiles_AWS_S3 - Prérequis
 # AWS SDK pour PHP - https://docs.aws.amazon.com/fr_fr/sdk-for-php/v3/developer-guide/welcome.html
 Le SDK de aws fonctionne via des credentials présent dans votre dossier .aws sous Windows
 https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html
@@ -20,5 +26,10 @@ Attention : télécharger composer, https://getcomposer.org/download/ si besoin 
 
 # Quatrième étape - Lancer le server en local
 6 - Lancer la commande "symfony serve" dans votre terminal
+
+
+# Contribute
+Yohann CLEMENT
+Tristan NAVEZ
 
 
